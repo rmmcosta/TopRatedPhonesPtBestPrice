@@ -10,7 +10,7 @@ const trTopRatedPhonesURL = 'https://www.techradar.com/uk/news/best-phone';
 const corsOptions = {
     origin: function (origin, callback) {
         console.log(origin);
-        return callback(origin, true);
+        return callback(null, true);
     }
 }
 
