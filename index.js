@@ -14,12 +14,9 @@ const corsOptions = {
     }
 }
 
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    next();
-});
-
 app.get('/phones', async (req, res) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
     const phoneList = await getTopRatedPhones();
     const priceList = await getBestPrices(phoneList);
     let html = '<h2>Best phones and prices</h2><hr><br>' +
