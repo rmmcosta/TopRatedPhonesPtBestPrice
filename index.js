@@ -28,7 +28,19 @@ app.get('/phones', async (req, res) => {
     res.send(html);
 });
 
-app.listen(3000);
+//start the app on the given port
+const listenHandler = (err) => {
+    if (err) {
+        console.log(err);
+    } else {
+        console.log(`Web conference up and running on ${host}:${port}`);
+    }
+}
+
+const host = process.env.HOST || '127.0.0.1';
+const port = process.env.PORT || 8080;
+
+app.listen(port, listenHandler);
 
 //fetch the top rated phones
 async function getTopRatedPhones() {
