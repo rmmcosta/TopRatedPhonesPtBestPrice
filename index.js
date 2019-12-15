@@ -10,17 +10,11 @@ const trTopRatedPhonesURL = 'https://www.techradar.com/uk/news/best-phone';
 const corsOptions = {
     origin: function (origin, callback) {
         console.log(origin);
-        return callback(null, true);
+        return callback(origin, true);
     }
 }
 
-app.all('/', cors(corsOptions), function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    next();
-});
-
-app.get('/phones', async (req, res) => {
+app.get('/phones', cors(corsOptions), async (req, res) => {
     const phoneList = await getTopRatedPhones();
     const priceList = await getBestPrices(phoneList);
     let html = '<h2>Best phones and prices</h2><hr><br>' +
