@@ -3,6 +3,39 @@ const app = express();
 const rp = require('request-promise');
 const $ = require('cheerio');
 const cors = require('cors');
+const schedule = require('node-schedule');
+const fs = require('fs');
+
+var j = schedule.scheduleJob('0 0 * * *', function () {
+    writePhonePrices2File();
+});
+
+
+async function writePhonePrices2File() {
+    const phoneList = await getTopRatedPhones();
+    const priceList = await getBestPrices(phoneList);
+    let html = '<table>' +
+        '<tr>' +
+        '<th>Phone</th>' +
+        '<th>Worten</th>' +
+        '<th>Tek4Life</th>' +
+        '</tr>';
+    priceList.forEach(phone => {
+        html = html + '<tr>' +
+            '<td>' +
+            phone.name +
+            '</td><td>' +
+            phone.worten + ' €</td>' +
+            '</td><td>' +
+            (isNaN(phone.tek4life) ? 'N/A' : phone.tek4life) + ' €</td></tr>';
+    });
+    html = html + '</table>';
+    fs.writeFile('phonePrices.html', html, function (err) {
+        if (err) throw err;
+        console.log('File is created successfully.');
+    });
+}
+
 //url for Techradar top rated phones
 const trTopRatedPhonesURL = 'https://www.techradar.com/uk/news/best-phone';
 
@@ -13,6 +46,21 @@ const corsOptions = {
         return callback(null, true);
     }
 }
+
+app.get('/startFile', (req, res) => {
+    writePhonePrices2File();
+    res.send('Triggered writePhonePrices2File!');
+});
+
+app.get('/readFile', (req, res) => {
+    fs.readFile('phonePrices.html',
+        // callback function that is called when reading file is done
+        function (err, data) {
+            if (err) throw err;
+            // data is a buffer containing file content
+            res.send(data.toString('utf8'));
+        });
+});
 
 app.get('/phones', async (req, res) => {
     res.header("Access-Control-Allow-Origin", "*");
