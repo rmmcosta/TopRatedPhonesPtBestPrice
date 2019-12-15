@@ -2,8 +2,23 @@ const express = require('express');
 const app = express();
 const rp = require('request-promise');
 const $ = require('cheerio');
+const cors = require('cors');
 //url for Techradar top rated phones
 const trTopRatedPhonesURL = 'https://www.techradar.com/uk/news/best-phone';
+
+//const whitelist = ['localhost'];
+const corsOptions = {
+    origin: function (origin, callback) {
+        console.log(origin);
+        return callback(null, true);
+    }
+}
+
+app.all('/', cors(corsOptions), function (req, res, next) {
+    //res.header("Access-Control-Allow-Origin", "*");
+    //res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    next();
+});
 
 app.get('/phones', async (req, res) => {
     const phoneList = await getTopRatedPhones();
