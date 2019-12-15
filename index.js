@@ -14,12 +14,13 @@ var j = schedule.scheduleJob('0 0 * * *', function () {
 async function writePhonePrices2File() {
     const phoneList = await getTopRatedPhones();
     const priceList = await getBestPrices(phoneList);
-    let html = '<table>' +
+    let html = '<table class="table">' +
+        '<thead class="thead-dark">' +
         '<tr>' +
         '<th>Phone</th>' +
         '<th>Worten</th>' +
         '<th>Tek4Life</th>' +
-        '</tr>';
+        '</tr></thead><tbody>';
     priceList.forEach(phone => {
         html = html + '<tr>' +
             '<td>' +
@@ -29,7 +30,7 @@ async function writePhonePrices2File() {
             '</td><td>' +
             (isNaN(phone.tek4life) ? 'N/A' : phone.tek4life) + ' €</td></tr>';
     });
-    html = html + '</table>';
+    html = html + '</tbody></table>';
     fs.writeFile('phonePrices.html', html, function (err) {
         if (err) throw err;
         console.log('File is created successfully.');
