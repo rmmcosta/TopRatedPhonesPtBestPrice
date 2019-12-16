@@ -251,7 +251,7 @@ async function getTek4LifeBestPrice(options, phoneName) {
             let topParent, parentTitle;
             for (let i = 0; i < numPrices; i++) {
                 try {
-                    currPrice = pricesObj[i].children[0].data.replace(',00', '');
+                    currPrice = pricesObj[i].children[0].data.replace(/,.*/, '');
                     currPrice = currPrice.replace(',', '');
                     currPrice = currPrice.replace('.', '');
                     currPrice = currPrice.replace('€', '');
