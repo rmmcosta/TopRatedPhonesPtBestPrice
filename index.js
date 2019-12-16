@@ -208,7 +208,9 @@ async function getWortenBestPrice(options, phoneName) {
                     numPrices2 = pricesObj[i].children.length;
                     //console.log('numPrices2:',numPrices2);
                     for (let j = 0; j < numPrices2; j++) {
-                        currPrice = parseInt(pricesObj[i].children[j].data);
+                        currPrice = pricesObj[i].children[j].data.replace(',', '');
+                        currPrice = pricesObj[i].children[j].data.replace('.', '');
+                        currPrice = parseInt(currPrice);
                         if (!isNaN(currPrice)) {
                             //console.log('value found');
                             break;
@@ -264,7 +266,9 @@ async function getTek4LifeBestPrice(options, phoneName) {
             let topParent, parentTitle;
             for (let i = 0; i < numPrices; i++) {
                 try {
-                    currPrice = parseInt(pricesObj[i].children[0].data);
+                    currPrice = pricesObj[i].children[0].data.replace(',', '');
+                    currPrice = pricesObj[i].children[0].data.replace('.', '');
+                    currPrice = parseInt(currPrice);
                     //console.log('currprice', currPrice);
                     topParent = pricesObj[i];
                     while (topParent.attribs.class != 'display-table') {
