@@ -6,32 +6,15 @@ const cors = require('cors');
 const schedule = require('node-schedule');
 const fs = require('fs');
 
-var j = schedule.scheduleJob('0 0 * * *', function () {
+app.get('/test', (req, res) => {
     writePhonePrices2File();
+    res.send('start creating file.');
 });
-
 
 async function writePhonePrices2File() {
     const phoneList = await getTopRatedPhones();
-    const priceList = await getBestPrices(phoneList);
-    let html = '<table class="table">' +
-        '<thead class="thead-dark">' +
-        '<tr>' +
-        '<th>Phone</th>' +
-        '<th>Worten</th>' +
-        '<th>Tek4Life</th>' +
-        '</tr></thead><tbody>';
-    priceList.forEach(phone => {
-        html = html + '<tr>' +
-            '<td>' +
-            phone.name +
-            '</td><td>' +
-            phone.worten + ' €</td>' +
-            '</td><td>' +
-            (isNaN(phone.tek4life) ? 'N/A' : phone.tek4life) + ' €</td></tr>';
-    });
-    html = html + '</tbody></table>';
-    fs.writeFile('phonePrices.html', html, function (err) {
+    const testevidences = await getBestPrices(phoneList);
+    fs.writeFile('test.txt', testevidences, function (err) {
         if (err) throw err;
         console.log('File is created successfully.');
     });
@@ -47,46 +30,6 @@ const corsOptions = {
         return callback(null, true);
     }
 }
-
-app.get('/startFile', (req, res) => {
-    writePhonePrices2File();
-    res.send('Triggered writePhonePrices2File!');
-});
-
-app.get('/readFile', (req, res) => {
-    fs.readFile('phonePrices.html',
-        // callback function that is called when reading file is done
-        function (err, data) {
-            if (err) throw err;
-            // data is a buffer containing file content
-            res.send(data.toString('utf8'));
-        });
-});
-
-app.get('/phones', async (req, res) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    const phoneList = await getTopRatedPhones();
-    const priceList = await getBestPrices(phoneList);
-    let html = '<h2>Best phones and prices</h2><hr><br>' +
-        '<table style="border: 1px solid black; text-align:left; padding:5px;">' +
-        '<tr style="background-color:#46A049;padding:5px;">' +
-        '<th style="padding:5px; color:white;">Phone</th>' +
-        '<th style="padding:5px; color:white;">Worten</th>' +
-        '<th style="padding:5px; color:white;">Tek4Life</th>' +
-        '</tr>';
-    priceList.forEach(phone => {
-        html = html + '<tr style="border-bottom: 1px solid gray; background-color:white; padding: 5px;">' +
-            '<td style="padding:5px;">' +
-            phone.name +
-            '</td><td style="padding:5px;">' +
-            phone.worten + ' €</td>' +
-            '</td><td style="padding:5px;">' +
-            (isNaN(phone.tek4life) ? 'N/A' : phone.tek4life) + ' €</td></tr>';
-    });
-    html = html + '</table>';
-    res.send(html);
-});
 
 //start the app on the given port
 const listenHandler = (err) => {
@@ -144,11 +87,13 @@ async function getTopRatedPhones() {
 }
 
 async function getBestPrices(phonesList) {
-    for (let i = 0; i < phonesList.length; i++) {
-        phonesList[i].worten = await getPriceByShop(phonesList[i].name, 'worten');
-        phonesList[i].tek4life = await getPriceByShop(phonesList[i].name, 'tek4life');
-    }
-    return phonesList;
+    // phonesList[5].tek4life = await getPriceByShop(phonesList[5].name, 'tek4life');
+    let testevidences = '{"phoneName":' + phonesList[2].name + '}' + await getPriceByShop(phonesList[2].name, 'tek4life');
+    // for (let i = 0; i < phonesList.length; i++) {
+    //     phonesList[i].worten = await getPriceByShop(phonesList[i].name, 'worten');
+    //     phonesList[i].tek4life = await getPriceByShop(phonesList[i].name, 'tek4life');
+    // }
+    return testevidences;
 }
 
 async function getPriceByShop(phoneName, shop) {
@@ -168,122 +113,72 @@ async function getPriceByShop(phoneName, shop) {
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.111 Safari/537.36'
         }
     }
-    let bestPrice = '';
+    let testevidences = '';
     switch (shop) {
-        case 'worten':
-            bestPrice = await getWortenBestPrice(options, phoneName);
-            break;
         case 'tek4life':
-            bestPrice = await getTek4LifeBestPrice(options, phoneName);
+            testevidences = await getTek4LifeBestPrice(options, phoneName);
             break;
         default:
             break;
     }
-    console.log(bestPrice);
-    return bestPrice;
-}
-
-async function getWortenBestPrice(options, phoneName) {
-    const phoneNamePatt = new RegExp('\\b' + phoneName + '\\b', 'i');
-    const litePatt = new RegExp('\\bLite\\b', 'i');
-    const proPatt = new RegExp('\\Pro\\b', 'i');
-    //console.log(phoneName);
-    return rp(options)
-        .then(htmlPrices => {
-            let pricesObj = $('div.w-product__content .w-currentPrice .w-product-price__main', htmlPrices);
-            let numPrices = pricesObj.length;
-            let bestPrice = 10000;
-            let currPrice = 10000;
-            let currTitle = '';
-            let regexCheck = '';
-            let regexLiteCheck = '';
-            let regexProCheck = '';
-            let numPrices2 = '';
-            for (let i = 0; i < numPrices; i++) {
-                try {
-                    numPrices2 = pricesObj[i].children.length;
-                    //console.log('numPrices2:',numPrices2);
-                    for (let j = 0; j < numPrices2; j++) {
-                        currPrice = pricesObj[i].children[0].data;
-                        currPrice = parseInt(currPrice);
-                        if (!isNaN(currPrice)) {
-                            //console.log('value found');
-                            break;
-                        }
-                    }
-                    currTitle = pricesObj[i].parent.parent.parent.parent.children[0].children[0].children[0].children[0].data;
-                    regexCheck = phoneNamePatt.test(currTitle);
-                    regexLiteCheck = !litePatt.test(currTitle);
-                    regexProCheck = (!proPatt.test(phoneName) && !proPatt.test(currTitle)) || (proPatt.test(phoneName) && proPatt.test(currTitle));
-                    //console.log('currtitle:',currTitle);
-                    //console.log(currPrice);
-                    //>200 to ignore accessories
-                    if (regexCheck && regexLiteCheck && regexProCheck && currPrice > 200) {
-                        bestPrice = Math.min(currPrice, bestPrice);
-                    }
-                } catch (error) {
-                    //do nothing
-                }
-            }
-            //console.log(bestPrice);
-            return bestPrice == 10000 ? 'N/A' : bestPrice;
-        })
-        .catch(error => {
-            return error;
-        });
+    return testevidences;
 }
 
 async function getTek4LifeBestPrice(options, phoneName) {
     const phoneNamePatt = new RegExp('\\b' + phoneName + '\\b', 'i');
     const litePatt = new RegExp('\\bLite\\b', 'i');
-    const proPatt = new RegExp('\\Pro\\b', 'i');
-    //console.log(phoneName);
+    let testevidences = '{"phonename": "' + phoneName + '"\n\n';
     return rp(options)
         .then(htmlPrices => {
             let pricesObj = $('.category-products span.price', htmlPrices);
+            testevidences += ',' + pricesObj;
             let numPrices = pricesObj.length;
             let bestPrice = 10000;
             let currPrice;
             let currTitle = '';
             let regexCheck = '';
             let regexLiteCheck = '';
-            let regexProCheck = '';
             let topParent, parentTitle;
             for (let i = 0; i < numPrices; i++) {
                 try {
+                    testevidences += ',"currprice":"' + pricesObj[i].children[0].data + '",';
                     currPrice = pricesObj[i].children[0].data.replace(',00', '');
                     currPrice = currPrice.replace(',', '');
                     currPrice = currPrice.replace('.', '');
                     currPrice = currPrice.replace('€', '');
                     currPrice = currPrice.replace(/\s+/g, '');
+                    testevidences += ',"currprice after replaces":"' + currPrice;
                     currPrice = parseInt(currPrice);
+                    testevidences += ',"currprice":"' + currPrice + '",';
                     //console.log('currprice', currPrice);
                     topParent = pricesObj[i];
+                    testevidences += ',"topparent":"' + topParent + '",';
                     while (topParent.attribs.class != 'display-table') {
                         topParent = topParent.parent;
                     }
                     //console.log('top parent->', topParent);
                     parentTitle = topParent;
+                    testevidences += ',"parentTitle":"' + parentTitle + '",';
                     while (parentTitle.attribs.class != 'product-name') {
                         parentTitle = parentTitle.children[1];
                     }
                     currTitle = parentTitle.children[1].children[0].data;
+                    testevidences += ',"currTitle":"' + currTitle + '",';
                     //console.log('currtitle', currTitle);
                     regexCheck = phoneNamePatt.test(currTitle);
-                    regexLiteCheck = !litePatt.test(currTitle);
-                    regexProCheck = (!proPatt.test(phoneName) && !proPatt.test(currTitle)) || (proPatt.test(phoneName) && proPatt.test(currTitle));
+                    regexLiteCheck = litePatt.test(currTitle);
                     //console.log('currtitle:',currTitle);
                     //console.log(currPrice);
-                    //>300 to ignore accessories
-                    if (regexCheck && regexLiteCheck && regexProCheck && !isNaN(currPrice) && currPrice > 300) {
+                    //>200 to ignore accessories
+                    if (regexCheck && !regexLiteCheck && !isNaN(currPrice) && currPrice > 300) {
                         bestPrice = Math.min(currPrice, bestPrice);
                     }
                 } catch (error) {
                     //do nothing
                 }
             }
-            console.log('tek4life best price:', bestPrice);
-            return bestPrice == 10000 ? 'N/A' : bestPrice;
+            //console.log('tek4life best price:', bestPrice);
+            return testevidences;
         })
         .catch(error => {
             return error;
