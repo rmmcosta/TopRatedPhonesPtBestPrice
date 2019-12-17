@@ -3,16 +3,16 @@ const app = express();
 const rp = require('request-promise');
 const $ = require('cheerio');
 const cors = require('cors');
-const cron = require('node-cron');
+//const cron = require('node-cron');
 const fs = require('fs');
 
-cron.schedule('0 0 * * *', () => {
+/*cron.schedule('0 0 * * *', () => {
     console.log('running cron');
     writePhonePrices2File();
 }, {
     scheduled: true,
     timezone: "Europe/London"
-});
+});*/
 
 async function writePhonePrices2File() {
     const phoneList = await getTopRatedPhones();
