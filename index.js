@@ -3,18 +3,27 @@ const app = express();
 const rp = require('request-promise');
 const $ = require('cheerio');
 const cors = require('cors');
-const schedule = require('node-schedule');
+const cron = require('node-cron');
 const fs = require('fs');
 
-var j = schedule.scheduleJob('0 0 * * *', function () {
+cron.schedule('0 0 * * *', () => {
+    console.log('running cron');
     writePhonePrices2File();
+}, {
+    scheduled: true,
+    timezone: "Europe/London"
 });
-
 
 async function writePhonePrices2File() {
     const phoneList = await getTopRatedPhones();
     const priceList = await getBestPrices(phoneList);
-    let html = '<table class="table">' +
+    let today = new Date();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    const yyyy = today.getFullYear();
+    const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds()
+    today = mm + '/' + dd + '/' + yyyy + ' ' + time;
+    let html = '<h6 class="w-100 p-3">Updated at:'+today+'</h6><table class="table">' +
         '<thead class="thead-dark">' +
         '<tr>' +
         '<th>Phone</th>' +
@@ -57,7 +66,7 @@ app.get('/readFile', (req, res) => {
     fs.readFile('phonePrices.html',
         // callback function that is called when reading file is done
         function (err, data) {
-            if (err) throw err;
+            if (err) console.log(err);
             // data is a buffer containing file content
             res.send(data.toString('utf8'));
         });
