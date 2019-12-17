@@ -14,7 +14,8 @@ const fs = require('fs');
     timezone: "Europe/London"
 });*/
 
-async function writePhonePrices2File() {
+module.exports.writefile = async function writePhonePrices2File() {
+    console.log('start writing phones file with prices...');
     const phoneList = await getTopRatedPhones();
     const priceList = await getBestPrices(phoneList);
     let today = new Date();
