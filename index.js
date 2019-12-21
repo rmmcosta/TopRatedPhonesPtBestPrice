@@ -14,7 +14,7 @@ const fs = require('fs');
     timezone: "Europe/London"
 });*/
 
-module.exports.writefile = async function writePhonePrices2File() {
+async function writePhonePrices2File() {
     console.log('start writing phones file with prices...');
     const phoneList = await getTopRatedPhones();
     const priceList = await getBestPrices(phoneList);
@@ -46,6 +46,8 @@ module.exports.writefile = async function writePhonePrices2File() {
         console.log('File is created successfully.');
     });
 }
+
+module.exports.writefile = writePhonePrices2File;
 
 //url for Techradar top rated phones
 const trTopRatedPhonesURL = 'https://www.techradar.com/uk/news/best-phone';
