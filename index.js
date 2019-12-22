@@ -24,7 +24,7 @@ async function writePhonePrices2File() {
     const yyyy = today.getFullYear();
     const time = today.getHours() + ":" + today.getMinutes() + ":" + String(today.getSeconds()).padStart(2, '0');
     today = mm + '/' + dd + '/' + yyyy + ' ' + time;
-    let html = '<h6 class="w-100 p-3 text-muted">Updated at: '+today+'</h6><table class="table">' +
+    let html = '<h6 class="w-100 p-3 text-muted">Updated at: ' + today + '</h6><table class="table">' +
         '<thead class="thead-dark">' +
         '<tr>' +
         '<th>Phone</th>' +
@@ -146,6 +146,27 @@ async function getTopRatedPhones() {
                         tek4life: 'N/A'
                     });
                 }
+                //add older iphones
+                namesArray.push({
+                    name: 'iphone 8',
+                    worten: 'N/A',
+                    tek4life: 'N/A'
+                });
+                namesArray.push({
+                    name: 'iphone 7',
+                    worten: 'N/A',
+                    tek4life: 'N/A'
+                });
+                namesArray.push({
+                    name: 'iphone 6s',
+                    worten: 'N/A',
+                    tek4life: 'N/A'
+                });
+                namesArray.push({
+                    name: 'iphone 6',
+                    worten: 'N/A',
+                    tek4life: 'N/A'
+                });
                 return namesArray;
             })
         .catch(
@@ -286,8 +307,8 @@ async function getTek4LifeBestPrice(options, phoneName) {
                     regexProCheck = (!proPatt.test(phoneName) && !proPatt.test(currTitle)) || (proPatt.test(phoneName) && proPatt.test(currTitle));
                     //console.log('currtitle:',currTitle);
                     //console.log(currPrice);
-                    //>300 to ignore accessories
-                    if (regexCheck && regexLiteCheck && regexProCheck && !isNaN(currPrice) && currPrice > 300) {
+                    //200 to ignore accessories
+                    if (regexCheck && regexLiteCheck && regexProCheck && !isNaN(currPrice) && currPrice > 200) {
                         bestPrice = Math.min(currPrice, bestPrice);
                     }
                 } catch (error) {
