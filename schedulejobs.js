@@ -2,4 +2,4 @@ const phones = require('./index');
 
 console.log('schedule jobs...');
 
-phones.writefile();
+phones.writefile(true);

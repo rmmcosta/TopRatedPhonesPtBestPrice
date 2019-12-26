@@ -14,7 +14,7 @@ const fs = require('fs');
     timezone: "Europe/London"
 });*/
 
-async function writePhonePrices2File() {
+async function writePhonePrices2File(isToClose) {
     console.log('start writing phones file with prices...');
     const phoneList = await getTopRatedPhones();
     const priceList = await getBestPrices(phoneList);
@@ -44,6 +44,10 @@ async function writePhonePrices2File() {
     fs.writeFile('phonePrices.html', html, function (err) {
         if (err) throw err;
         console.log('File is created successfully.');
+
+        if (isToClose) {
+            process.exit();
+        }
     });
 }
 
@@ -61,7 +65,7 @@ const corsOptions = {
 }
 
 app.get('/startFile', (req, res) => {
-    writePhonePrices2File();
+    writePhonePrices2File(false);
     res.send('Triggered writePhonePrices2File!');
 });
 
