@@ -22,7 +22,7 @@ async function writePhonePrices2File() {
     const dd = String(today.getDate()).padStart(2, '0');
     const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
     const yyyy = today.getFullYear();
-    const time = today.getHours() + ":" + today.getMinutes() + ":" + String(today.getSeconds()).padStart(2, '0');
+    const time = String(today.getHours()).padStart(2, '0') + ":" + String(today.getMinutes()).padStart(2, '0') + ":" + String(today.getSeconds()).padStart(2, '0');
     today = mm + '/' + dd + '/' + yyyy + ' ' + time;
     let html = '<h6 class="w-100 p-3 text-muted">Updated at: ' + today + '</h6><table class="table">' +
         '<thead class="thead-dark">' +
