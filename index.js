@@ -152,6 +152,21 @@ async function getTopRatedPhones() {
                 }
                 //add older iphones
                 namesArray.push({
+                    name: 'iphone XS',
+                    worten: 'N/A',
+                    tek4life: 'N/A'
+                });
+                namesArray.push({
+                    name: 'iphone XR',
+                    worten: 'N/A',
+                    tek4life: 'N/A'
+                });
+                namesArray.push({
+                    name: 'iphone X',
+                    worten: 'N/A',
+                    tek4life: 'N/A'
+                });
+                namesArray.push({
                     name: 'iphone 8',
                     worten: 'N/A',
                     tek4life: 'N/A'
