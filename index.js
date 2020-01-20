@@ -150,6 +150,12 @@ async function getTopRatedPhones() {
                         tek4life: 'N/A'
                     });
                 }
+                //add specific androids
+                namesArray.push({
+                    name: 'Samsung Galaxy A70',
+                    worten: 'N/A',
+                    tek4life: 'N/A'
+                });
                 //add older iphones
                 namesArray.push({
                     name: 'iphone XS',
